@@ -1,6 +1,6 @@
 {
-  "name": "HACC",
-  "short_name": "HACC",
+  "name": "HACC.Demo",
+  "short_name": "HACC.Demo",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
