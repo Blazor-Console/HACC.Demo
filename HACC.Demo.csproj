@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-        <RootNamespace>HACC</RootNamespace>
+        <RootNamespace>HACC.Demo</RootNamespace>
         <AssemblyName>HACC.Demo</AssemblyName>
     </PropertyGroup>
 

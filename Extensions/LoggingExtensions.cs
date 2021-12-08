@@ -1,8 +1,8 @@
-﻿using HACC.Logging;
+﻿using HACC.Demo.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.Configuration;
 
-namespace HACC.Extensions;
+namespace HACC.Demo.Extensions;
 
 public static class LoggingExtensions
 {

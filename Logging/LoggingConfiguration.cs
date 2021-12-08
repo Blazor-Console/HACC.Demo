@@ -1,4 +1,4 @@
-﻿namespace HACC.Logging;
+﻿namespace HACC.Demo.Logging;
 
 public class LoggingConfiguration
 {

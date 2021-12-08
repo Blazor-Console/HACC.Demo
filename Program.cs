@@ -1,7 +1,8 @@
-using HACC;
+using HACC.Demo;
+using HACC.Demo.Extensions;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using static HACC.Extensions.LoggingExtensions;
+using static HACC.Demo.Extensions.LoggingExtensions;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args: args);
 builder.RootComponents.Add<App>(selector: "#app");

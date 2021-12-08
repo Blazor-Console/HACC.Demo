@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
 
-namespace HACC.Logging;
+namespace HACC.Demo.Logging;
 
 public sealed class LoggingProvider : ILoggerProvider
 {
