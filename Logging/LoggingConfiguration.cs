@@ -6,6 +6,6 @@ public class LoggingConfiguration
 
     public Dictionary<LogLevel, ConsoleColor> LogLevels { get; set; } = new()
     {
-        [key: LogLevel.Information] = ConsoleColor.Green
+        [key: LogLevel.Information] = ConsoleColor.Green,
     };
 }
