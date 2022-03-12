@@ -1,8 +1,8 @@
+using HACC.Components;
 using HACC.Demo;
 using HACC.Demo.Extensions;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using static HACC.Demo.Extensions.LoggingExtensions;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args: args);
 builder.RootComponents.Add<App>(selector: "#app");
@@ -10,6 +10,8 @@ builder.RootComponents.Add<HeadOutlet>(selector: "head::after");
 
 builder.Services.AddScoped(implementationFactory: sp => new HttpClient
     {BaseAddress = new Uri(uriString: builder.HostEnvironment.BaseAddress)});
+
+builder.Services.AddSingleton(implementationFactory: serviceProvider => new WebClipboard());
 
 builder.Services.AddOidcAuthentication(configure: options =>
 {

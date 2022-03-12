@@ -26,6 +26,7 @@
 <script src="_framework/blazor.webassembly.js"></script>
 <script>navigator.serviceWorker.register('service-worker.js');</script>
 <script>
+    // HACC.JavaScript.beep.js
     // from: https://stackoverflow.com/a/29641185
     //if you have another AudioContext class use that one, as some browsers have a limit
     var audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
@@ -59,6 +60,26 @@
 
         oscillator.start(audioCtx.currentTime);
         oscillator.stop(audioCtx.currentTime + ((parseFloat(duration) || 500) / 1000));
+    };
+
+    // HACC.JavaScript.clipboard.js
+    window.clipboardFunctions = {
+        setText: function (clipboardText) {
+            navigator.clipboard.writeText(clipboardText).then(function () {
+                return true;
+            })
+            .catch(function (error) {
+                return false;
+            });
+        },
+        getText: function () {
+            navigator.clipboard.readText().then(function (text) {
+                return text;
+            })
+            .catch(function (error) {
+                return null;
+            });
+        }
     };
 </script>
 </body>
