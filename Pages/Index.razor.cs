@@ -9,19 +9,20 @@ namespace HACC.Demo.Pages;
 [SupportedOSPlatform(platformName: "browser")]
 public partial class Index
 {
-    private ConsoleType ActiveConsole { get; }
+    private ConsoleType ActiveConsole { get; } = ConsoleType.StandardOutput;
 
     [Inject] private ILogger Logger { get; set; } = null!;
 
     public readonly WebApplication WebApplication;
 
+    // ReSharper disable once MemberInitializerValueIgnored
     public Console ConsoleReference { get; set; } = null!;
-    
+
     public Index()
     {
-        ActiveConsole = ConsoleType.StandardOutput;
         this.WebApplication = new WebApplication(
-            logger: Logger,
-            console: ConsoleReference);
+            logger: this.Logger,
+            console: this.ConsoleReference!);
+        this.WebApplication.Init();
     }
 }
