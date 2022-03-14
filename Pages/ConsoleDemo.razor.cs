@@ -21,6 +21,11 @@ public partial class ConsoleDemo : ComponentBase
         this.WebApplication = new WebApplication(
             logger: this.Logger,
             console: this.ConsoleReference!);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
         this.WebApplication.Init();
     }
 }
