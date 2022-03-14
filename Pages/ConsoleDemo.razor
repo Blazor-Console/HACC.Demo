@@ -1,0 +1,15 @@
+@page "/console"
+@using HACC.Enumerations
+@using Terminal.Gui
+@using HACC.Applications
+
+<PageTitle>Console Demo</PageTitle>
+
+@if (ActiveConsole is ConsoleType.StandardOutput)
+{
+    <Console ConsoleType="ConsoleType.StandardOutput"></Console>
+}
+else if (ActiveConsole is ConsoleType.StandardError)
+{
+    <Console ConsoleType="ConsoleType.StandardError" @ref="ConsoleReference"></Console>
+}

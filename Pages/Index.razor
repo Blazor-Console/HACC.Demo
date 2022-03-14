@@ -1,15 +1,10 @@
 ﻿@page "/"
-@using HACC.Enumerations
-@using Terminal.Gui
-@using HACC.Applications
 
 <PageTitle>Console Demo</PageTitle>
 
-@if (ActiveConsole is ConsoleType.StandardOutput)
-{
-    <Console ConsoleType="ConsoleType.StandardOutput"></Console>
-}
-else if (ActiveConsole is ConsoleType.StandardError)
-{
-    <Console ConsoleType="ConsoleType.StandardError" @ref="ConsoleReference"></Console>
-}
+<h1>HACC Console Demo</h1>
+
+This is a demo of a Terminal.Gui and Spectre.Console compatible web console.
+
+Check out the <a href="/console">Demo</a>!
+
