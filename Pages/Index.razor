@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using HACC.Enumerations
 @using Terminal.Gui
+@using HACC.Applications
 
 <PageTitle>Console Demo</PageTitle>
 
@@ -10,5 +11,16 @@
 }
 else if (ActiveConsole is ConsoleType.StandardError)
 {
-    <Console ConsoleType="ConsoleType.StandardError"></Console>
+    <Console ConsoleType="ConsoleType.StandardError" @ref="ConsoleReference"></Console>
+}
+
+@code
+{
+    public Index()
+    {
+        ActiveConsole = ConsoleType.StandardOutput;
+        WebApplication webApplication = new WebApplication(
+            logger: Logger,
+            console: ConsoleReference);
+    }
 }
