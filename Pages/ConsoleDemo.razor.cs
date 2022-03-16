@@ -2,6 +2,7 @@ using System.Runtime.Versioning;
 using HACC.Applications;
 using HACC.Components;
 using HACC.Enumerations;
+using HACC.Models;
 using HACC.Models.Drivers;
 using Microsoft.AspNetCore.Components;
 
@@ -12,6 +13,8 @@ public partial class ConsoleDemo : ComponentBase
 
     [Inject] private ILogger Logger { get; set; } = null!;
 
+    [Inject] private WebClipboard WebClipboard { get; set; } = null!;
+
     public readonly WebApplication WebApplication;
 
     // ReSharper disable once MemberInitializerValueIgnored
@@ -21,10 +24,11 @@ public partial class ConsoleDemo : ComponentBase
     {
         this.WebApplication = new WebApplication(
             logger: this.Logger,
+            webClipboard: this.WebClipboard,
             console: this.ConsoleReference);
 
-        WebApplication.Init();
-        //WebApplication.Run();
+        this.WebApplication.Init();
+        //this.WebApplication.Run();
     }
 
     protected override void OnAfterRender(bool firstRender)
