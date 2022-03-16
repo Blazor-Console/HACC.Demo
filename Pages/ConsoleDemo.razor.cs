@@ -15,6 +15,8 @@ public partial class ConsoleDemo : ComponentBase
 
     [Inject] private WebClipboard WebClipboard { get; set; } = null!;
 
+    private static WebApplication? _instance;
+
     public readonly WebApplication WebApplication;
 
     // ReSharper disable once MemberInitializerValueIgnored
@@ -22,11 +24,16 @@ public partial class ConsoleDemo : ComponentBase
 
     public ConsoleDemo()
     {
+        if (_instance != null)
+        {
+            _instance.Shutdown();
+        }
         this.WebApplication = new WebApplication(
             logger: this.Logger,
             webClipboard: this.WebClipboard,
             console: this.ConsoleReference);
 
+        _instance = this.WebApplication;
         this.WebApplication.Init();
         //this.WebApplication.Run();
     }
