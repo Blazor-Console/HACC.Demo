@@ -24,7 +24,7 @@ public partial class ConsoleDemo : ComponentBase
             console: this.ConsoleReference);
 
         WebApplication.Init();
-        WebApplication.Run();
+        //WebApplication.Run();
     }
 
     protected override void OnAfterRender(bool firstRender)
