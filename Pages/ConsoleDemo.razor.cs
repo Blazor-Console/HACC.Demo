@@ -1,9 +1,6 @@
 using System.Runtime.Versioning;
 using HACC.Applications;
-using HACC.Components;
-using HACC.Enumerations;
-using HACC.Models;
-using HACC.Models.Drivers;
+using HACC.Demo.Logging;
 using Microsoft.AspNetCore.Components;
 
 namespace HACC.Demo.Pages;
@@ -13,14 +10,9 @@ public partial class ConsoleDemo : ComponentBase
 
     [Inject] private ILogger Logger { get; set; } = null!;
 
-    [Inject] private WebClipboard WebClipboard { get; set; } = null!;
-
     private static WebApplication? _instance;
 
     public readonly WebApplication WebApplication;
-
-    // ReSharper disable once MemberInitializerValueIgnored
-    public WebConsole ConsoleReference { get; set; } = null!;
 
     public ConsoleDemo()
     {
@@ -28,14 +20,18 @@ public partial class ConsoleDemo : ComponentBase
         {
             _instance.Shutdown();
         }
+        this.Logger = new CustomLogger("Test", GetConfig);
         this.WebApplication = new WebApplication(
-            logger: this.Logger,
-            webClipboard: this.WebClipboard,
-            console: this.ConsoleReference);
+            logger: this.Logger);
 
         _instance = this.WebApplication;
         this.WebApplication.Init();
         //this.WebApplication.Run();
+    }
+
+    private LoggingConfiguration GetConfig()
+    {
+        throw new NotImplementedException();
     }
 
     protected override void OnAfterRender(bool firstRender)
