@@ -4,39 +4,15 @@ using HACC.Demo.Logging;
 using Microsoft.AspNetCore.Components;
 
 namespace HACC.Demo.Pages;
-[SupportedOSPlatform(platformName: "browser")]
 public partial class ConsoleDemo : ComponentBase
 {
 
-    [Inject] private ILogger Logger { get; set; } = null!;
+    [Inject] public WebApplication WebApplication { get; set; } = default!;
 
-    private static WebApplication? _instance;
-
-    public readonly WebApplication WebApplication;
-
-    public ConsoleDemo()
+    protected override async Task OnInitializedAsync()
     {
-        if (_instance != null)
-        {
-            _instance.Shutdown();
-        }
-        this.Logger = new CustomLogger("Test", GetConfig);
-        this.WebApplication = new WebApplication(
-            logger: this.Logger);
-
-        _instance = this.WebApplication;
+        await base.OnInitializedAsync();
+        this.WebApplication.Shutdown();
         this.WebApplication.Init();
-        //this.WebApplication.Run();
-    }
-
-    private LoggingConfiguration GetConfig()
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        base.OnAfterRender(firstRender);
-        //this.WebApplication.Init();
     }
 }

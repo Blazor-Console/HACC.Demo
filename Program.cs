@@ -1,3 +1,4 @@
+using HACC.Applications;
 using HACC.Components;
 using HACC.Demo;
 using HACC.Demo.Extensions;
@@ -11,8 +12,6 @@ builder.RootComponents.Add<HeadOutlet>(selector: "head::after");
 
 builder.Services.AddScoped(implementationFactory: sp => new HttpClient
     {BaseAddress = new Uri(uriString: builder.HostEnvironment.BaseAddress)});
-
-builder.Services.AddSingleton(implementationFactory: serviceProvider => new WebClipboard());
 
 builder.Services.AddOidcAuthentication(configure: options =>
 {
@@ -30,4 +29,9 @@ builder.Logging.AddCustomLogging(configure: configuration =>
         key: LogLevel.Error, value: ConsoleColor.Red);
 });
 builder.Logging.SetMinimumLevel(level: LogLevel.Debug);
+
+builder.Services.AddSingleton(implementationFactory: serviceProvider => new WebClipboard());
+builder.Services.AddSingleton(implementationFactory: serviceProvider => new WebApplication(
+    logger: serviceProvider.GetService<ILogger>()!));
+
 await builder.Build().RunAsync();
