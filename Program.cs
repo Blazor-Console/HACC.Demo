@@ -3,6 +3,7 @@ using HACC.Components;
 using HACC.Demo;
 using HACC.Demo.Extensions;
 using HACC.Models;
+using HACC.Models.Drivers;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -30,8 +31,10 @@ builder.Logging.AddCustomLogging(configure: configuration =>
 });
 builder.Logging.SetMinimumLevel(level: LogLevel.Debug);
 
-builder.Services.AddSingleton(implementationFactory: serviceProvider => new WebClipboard());
-builder.Services.AddSingleton(implementationFactory: serviceProvider => new WebApplication(
-    logger: serviceProvider.GetService<ILogger>()!));
+var webClipboard = new WebClipboard();
+builder.Services.AddSingleton(implementationFactory: serviceProvider => webClipboard);
+builder.Services.AddSingleton(implementationFactory: serviceProvider => new WebApplication(webConsoleDriver: new WebConsoleDriver(
+    logger: serviceProvider.GetService<ILogger>()!,
+    webClipboard: webClipboard)));
 
 await builder.Build().RunAsync();
