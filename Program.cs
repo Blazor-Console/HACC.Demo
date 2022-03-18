@@ -31,10 +31,7 @@ builder.Logging.AddCustomLogging(configure: configuration =>
 });
 builder.Logging.SetMinimumLevel(level: LogLevel.Debug);
 
-var webClipboard = new WebClipboard();
-builder.Services.AddSingleton(implementationFactory: serviceProvider => webClipboard);
 builder.Services.AddSingleton(implementationFactory: serviceProvider => new WebApplication(webConsoleDriver: new WebConsoleDriver(
-    logger: serviceProvider.GetService<ILogger>()!,
-    webClipboard: webClipboard)));
+    logger: serviceProvider.GetService<ILoggerFactory>()!.CreateLogger("Logging"))));
 
 await builder.Build().RunAsync();
