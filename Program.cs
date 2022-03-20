@@ -12,7 +12,7 @@ builder.RootComponents.Add<App>(selector: "#app");
 builder.RootComponents.Add<HeadOutlet>(selector: "head::after");
 
 builder.Services.AddScoped(implementationFactory: sp => new HttpClient
-    {BaseAddress = new Uri(uriString: builder.HostEnvironment.BaseAddress)});
+{ BaseAddress = new Uri(uriString: builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddOidcAuthentication(configure: options =>
 {
@@ -31,7 +31,11 @@ builder.Logging.AddCustomLogging(configure: configuration =>
 });
 builder.Logging.SetMinimumLevel(level: LogLevel.Debug);
 
-builder.Services.AddSingleton(implementationFactory: serviceProvider => new WebApplication(webConsoleDriver: new WebConsoleDriver(
-    logger: serviceProvider.GetService<ILoggerFactory>()!.CreateLogger("Logging"))));
+//builder.Services.AddSingleton(implementationFactory: serviceProvider => new WebApplication(webConsoleDriver: new WebConsoleDriver(
+//    logger: serviceProvider.GetService<ILoggerFactory>()!.CreateLogger("Logging"))));
+//builder.Services.AddSingleton(implementationFactory: serviceProvider => new WebConsole(
+//    logger: serviceProvider.GetService<ILoggerFactory>()!.CreateLogger("Logging")));
+//builder.Services.AddSingleton(implementationFactory: serviceProvider => new WebApplication(
+//    logger: serviceProvider.GetService<ILoggerFactory>()!.CreateLogger("Logging")));
 
 await builder.Build().RunAsync();
