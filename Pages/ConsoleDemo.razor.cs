@@ -51,5 +51,7 @@ public partial class ConsoleDemo : ComponentBase
         Application.Top.Add(new Label("HACC Demo"));
 
         WebApplication.Run();
+
+        InvokeAsync(() => StateHasChanged());
     }
 }
