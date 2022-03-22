@@ -14,13 +14,6 @@ builder.RootComponents.Add<HeadOutlet>(selector: "head::after");
 builder.Services.AddScoped(implementationFactory: sp => new HttpClient
 { BaseAddress = new Uri(uriString: builder.HostEnvironment.BaseAddress) });
 
-builder.Services.AddOidcAuthentication(configure: options =>
-{
-    // Configure your authentication provider options here.
-    // For more information, see https://aka.ms/blazor-standalone-auth
-    builder.Configuration.Bind(key: "Local", instance: options.ProviderOptions);
-});
-
 builder.Logging.ClearProviders();
 builder.Logging.AddCustomLogging(configure: configuration =>
 {
