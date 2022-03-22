@@ -82,7 +82,8 @@
     };
 
     // HACC.JavaScript.canvasToPng.js
-    window.canvasToPng = () =>{
+    window.canvasToPng = () => {
+        // TODO: this id will have to be able to be dynamic if we're going to have two instances on a page (std out / err)
         return document.getElementById("canvas").toDataURL("image/png");
     };
 </script>
