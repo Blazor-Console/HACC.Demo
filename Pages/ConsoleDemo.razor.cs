@@ -1,6 +1,5 @@
 using System.Runtime.Versioning;
 using HACC.Applications;
-using HACC.Demo.Logging;
 using Microsoft.AspNetCore.Components;
 using Terminal.Gui;
 
