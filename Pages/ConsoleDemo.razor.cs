@@ -8,7 +8,7 @@ public partial class ConsoleDemo : ComponentBase
 {
     [Inject] private ILoggerFactory LoggerFactory { get; set; }
 
-    private static ILogger _logger;
+    private ILogger _logger;
 
     [Inject] public static WebApplication WebApplication { get; set; } = default!;
 
@@ -23,10 +23,6 @@ public partial class ConsoleDemo : ComponentBase
         Application.Top.Add(new Label("HACC Demo"));
 
         WebApplication.Run();
-    }
-    public ConsoleDemo()
-    {
-
     }
 
     //public ConsoleDemo()
