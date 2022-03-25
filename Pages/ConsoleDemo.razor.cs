@@ -1,47 +1,26 @@
-using System.Runtime.Versioning;
 using HACC.Applications;
+using HACC.Extensions;
 using Microsoft.AspNetCore.Components;
 using Terminal.Gui;
 
 namespace HACC.Demo.Pages;
+
 public partial class ConsoleDemo : ComponentBase
 {
-    [Inject] private ILoggerFactory LoggerFactory { get; set; }
+    public readonly WebApplication WebApplication;
 
-    private ILogger _logger;
-
-    [Inject] public static WebApplication WebApplication { get; set; } = default!;
+    public ConsoleDemo()
+    {
+        ILogger logger = HaccExtensions.LoggerFactory.CreateLogger<ConsoleDemo>();
+        this.WebApplication = new WebApplication(logger: logger);
+    }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        _logger = LoggerFactory.CreateLogger("Logging");
-        WebApplication?.Shutdown();
-        WebApplication = new WebApplication(_logger);
-        WebApplication.Init();
-
-        Application.Top.Add(new Label("HACC Demo"));
-
-        WebApplication.Run();
+        this.WebApplication.Shutdown();
+        this.WebApplication.Init();
+        Application.Top.Add(view: new Label(text: "HACC Demo"));
+        this.WebApplication.Run();
     }
-
-    //public ConsoleDemo()
-    //{
-    //    if (_logger == null)
-    //    {
-    //        var serviceProvider = new ServiceCollection()
-    //          .AddLogging()
-    //          .BuildServiceProvider();
-
-    //        _logger = serviceProvider.GetService<ILoggerFactory>()!
-    //                     .CreateLogger("Logging");
-    //    }
-    //    WebApplication?.Shutdown();
-    //    WebApplication = new WebApplication(_logger);
-    //    WebApplication.Init();
-
-    //    Application.Top.Add(new Label("HACC Demo"));
-
-    //    WebApplication.Run();
-    //}
 }
