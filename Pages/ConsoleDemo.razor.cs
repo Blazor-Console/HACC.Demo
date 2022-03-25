@@ -11,8 +11,8 @@ public partial class ConsoleDemo : ComponentBase
 
     public ConsoleDemo()
     {
-        ILogger logger = HaccExtensions.LoggerFactory.CreateLogger<ConsoleDemo>();
-        this.WebApplication = new WebApplication(logger: logger);
+        this.WebApplication = new WebApplication(
+            logger: HaccExtensions.CreateLogger<ConsoleDemo>());
     }
 
     protected override async Task OnInitializedAsync()
