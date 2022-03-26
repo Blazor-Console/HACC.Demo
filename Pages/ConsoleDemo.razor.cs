@@ -1,4 +1,4 @@
-using HACC.Extensions;
+using HACC.Components;
 using Microsoft.AspNetCore.Components;
 using Terminal.Gui;
 
@@ -6,12 +6,15 @@ namespace HACC.Demo.Pages;
 
 public partial class ConsoleDemo : ComponentBase
 {
+    private WebConsole? _webConsole;
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        HaccExtensions.WebApplication.Shutdown();
-        HaccExtensions.WebApplication.Init();
+        this._webConsole!.WebConsoleDriver.ConsoleWeb = this._webConsole!;
+        this._webConsole.WebApplication.Shutdown();
+        this._webConsole.WebApplication.Init();
         Application.Top.Add(view: new Label(text: "HACC Demo"));
-        HaccExtensions.WebApplication.Run();
+        this._webConsole.WebApplication.Run();
     }
 }
