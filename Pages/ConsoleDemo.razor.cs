@@ -6,7 +6,7 @@ namespace HACC.Demo.Pages;
 
 public partial class ConsoleDemo : ComponentBase
 {
-    private WebConsole? _webConsole;
+    private WebConsole _webConsole = default!;
 
     protected override async Task OnInitializedAsync()
     {
