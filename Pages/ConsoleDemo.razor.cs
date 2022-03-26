@@ -7,19 +7,15 @@ namespace HACC.Demo.Pages;
 
 public partial class ConsoleDemo : ComponentBase
 {
-    public readonly WebApplication WebApplication;
+    public static readonly WebApplication WebApplication = HaccExtensions.GetService<WebApplication>();
 
-    public ConsoleDemo()
-    {
-        this.WebApplication = HaccExtensions.GetService<WebApplication>();
-    }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        this.WebApplication.Shutdown();
-        this.WebApplication.Init();
+        WebApplication.Shutdown();
+        WebApplication.Init();
         Application.Top.Add(view: new Label(text: "HACC Demo"));
-        this.WebApplication.Run();
+        WebApplication.Run();
     }
 }
