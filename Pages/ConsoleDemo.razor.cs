@@ -8,9 +8,9 @@ public partial class ConsoleDemo : ComponentBase
 {
     private WebConsole _webConsole = default!;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnAfterRender(bool firstRender)
     {
-        await base.OnInitializedAsync();
+        base.OnAfterRender(firstRender);
         this._webConsole.WebApplication.Shutdown();
         this._webConsole.WebApplication.Init();
         Application.Top.Add(view: new Label(text: "HACC Demo"));
