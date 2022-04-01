@@ -25,71 +25,12 @@
     <script src="_framework/blazor.webassembly.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
 
-    <script src="_content/Blazor.Extensions/blazor.extensions.js"></script>
     <script src="_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js"></script>
-    <script>
-        // HACC.JavaScript.beep.js
-        // from: https://stackoverflow.com/a/29641185
-        //All arguments are optional:
+    <script src="_content/HACC/JavaScript/beep.js"></script>
+    <script src="_content/HACC/JavaScript/clipboard.js"></script>
+    <script src="_content/HACC/JavaScript/canvasToPng.js"></script>
+    <script src="_content/HACC/JavaScript/consoleInterop.js"></script>
 
-        //duration of the tone in milliseconds. Default is 500
-        //frequency of the tone in hertz. default is 440
-        //volume of the tone. Default is 1, off is 0.
-        //type of tone. Possible values are sine, square, sawtooth, triangle, and custom. Default is sine.
-        //callback to use on end of tone
-        window.audioContextBeep = (duration, frequency, volume, type, callback) => {
-            //if you have another AudioContext class use that one, as some browsers have a limit
-            var audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
-
-            var oscillator = audioCtx.createOscillator();
-            var gainNode = audioCtx.createGain();
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            if (volume) {
-                gainNode.gain.value = parseFloat(volume);
-            }
-            if (frequency) {
-                oscillator.frequency.value = parseFloat(frequency);
-            }
-            if (type) {
-                oscillator.type = type;
-            }
-            if (callback) {
-                oscillator.onended = callback;
-            }
-
-            oscillator.start(audioCtx.currentTime);
-            oscillator.stop(audioCtx.currentTime + ((parseFloat(duration) || 500) / 1000));
-        };
-
-        // HACC.JavaScript.clipboard.js
-        window.clipboardFunctions = {
-            setText: function (clipboardText) {
-                navigator.clipboard.writeText(clipboardText).then(function () {
-                    return true;
-                })
-                    .catch(function (error) {
-                        return false;
-                    });
-            },
-            getText: function () {
-                navigator.clipboard.readText().then(function (text) {
-                    return text;
-                })
-                    .catch(function (error) {
-                        return null;
-                    });
-            }
-        };
-
-        // HACC.JavaScript.canvasToPng.js
-        window.canvasToPng = () => {
-            // TODO: this id will have to be able to be dynamic if we're going to have two instances on a page (std out / err)
-            return document.getElementById("canvas").toDataURL("image/png");
-        };
-    </script>
 </body>
 
 </html>
