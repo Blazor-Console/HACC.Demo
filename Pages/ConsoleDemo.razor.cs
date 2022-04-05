@@ -18,7 +18,23 @@ public partial class ConsoleDemo : ComponentBase
 
         this._webConsole.WebApplication!.Shutdown();
         this._webConsole.WebApplication.Init();
-        Application.Top.Add(view: new Label(text: "HACC Demo"));
+        var label = new Label(text: "HACC Demo")
+        {
+            X = Pos.Center(),
+            Y = 0
+        };
+        var text = new TextField(text: "Enter your name")
+        {
+            X = Pos.Center(),
+            Y = 2,
+            Width = 20
+        };
+        var button = new Button(text: "Say Hello")
+        {
+            X = Pos.Center(),
+            Y = 4
+        };
+        Application.Top.Add(label, text, button);
         this._webConsole.WebApplication.Run();
     }
 }
