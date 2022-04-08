@@ -1,4 +1,4 @@
-using HACC.Components;
+﻿using HACC.Components;
 using Microsoft.AspNetCore.Components;
 using Terminal.Gui;
 
@@ -18,23 +18,29 @@ public partial class ConsoleDemo : ComponentBase
 
         this._webConsole.WebApplication!.Shutdown();
         this._webConsole.WebApplication.Init();
-        var label = new Label(text: "HACC Demo")
+        var label = new Label(text: "Enter your name 你:")
         {
             X = Pos.Center(),
             Y = 0
         };
-        var text = new TextField(text: "Enter your name")
+        var text = new TextField("gui.cs 你:")
         {
             X = Pos.Center(),
             Y = 2,
             Width = 20
         };
-        var button = new Button(text: "Say Hello")
+        var button = new Button(text: "Say Hello 你")
         {
             X = Pos.Center(),
             Y = 4
         };
-        Application.Top.Add(label, text, button);
+        var win = new Window("HACC Demo 你")
+        {
+            Width = Dim.Fill(),
+            Height = Dim.Fill()
+        };
+        win.Add(label, text, button);
+        Application.Top.Add(win);
         this._webConsole.WebApplication.Run();
     }
 }
