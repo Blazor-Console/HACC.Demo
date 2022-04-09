@@ -78,5 +78,10 @@ public partial class ConsoleDemo : ComponentBase
         win.Add(label, text, button, text2);
         Application.Top.Add(win);
         this._webConsole.WebApplication.Run();
+        // no-op await to keep compiler happy
+        await Task.Run(() =>
+        {
+
+        });
     }
 }
