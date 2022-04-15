@@ -6,9 +6,9 @@ C# DotNet 6 HTML ANSI Console Canvas.
 * Contains a HTML component that renders the character buffer contents.
 * Contains glue code to create a System.Console compatible ANSI Console on an HTML5 Canvas.
 
-## Work in progress.
+## Beta!
 
-Will update readme once alpha is attained.
+![image](https://user-images.githubusercontent.com/3766240/163650530-01c3cbf2-d691-4de5-9d47-4771fb886448.png)
 
 ## Tests
 
