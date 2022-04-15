@@ -4,7 +4,7 @@ using Terminal.Gui;
 
 namespace HACC.Demo.Pages;
 
-public partial class ConsoleDemo : ComponentBase
+public partial class ConsoleSimpleCharDemo : ComponentBase
 {
     /// <summary>
     ///     This is NULL until after render
@@ -41,7 +41,7 @@ public partial class ConsoleDemo : ComponentBase
             Y = Pos.Center(),
             Width = 30,
         };
-        var win = new Window()
+        var win = new Window("HACC Demo")
         {
             Width = Dim.Fill(),
             Height = Dim.Fill()
