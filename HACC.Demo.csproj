@@ -16,6 +16,11 @@
         <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>embedded</DebugType>
+    </PropertyGroup>
+    
     <ItemGroup>
         <ProjectReference Include="..\gui.cs\Terminal.Gui\Terminal.Gui.csproj" />
         <ProjectReference Include="..\HACC\HACC.csproj" />

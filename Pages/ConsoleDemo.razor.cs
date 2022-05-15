@@ -9,9 +9,9 @@ public partial class ConsoleDemo : ComponentBase
     /// <summary>
     ///     This is NULL until after render
     /// </summary>
-    private WebConsole _webConsole = default!;
+    private WebConsole? _webConsole;
 
-    protected async Task InitApp()
+    protected void InitApp()
     {
         if (this._webConsole is null)
             throw new InvalidOperationException(message: "_webConsole reference was not set");
@@ -50,10 +50,5 @@ public partial class ConsoleDemo : ComponentBase
         win.Add(label, text, button, text2);
         Application.Top.Add(win);
         this._webConsole.WebApplication.Run();
-        // no-op await to keep compiler happy
-        await Task.Run(() =>
-        {
-
-        });
     }
 }
