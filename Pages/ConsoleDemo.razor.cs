@@ -41,13 +41,23 @@ public partial class ConsoleDemo : ComponentBase
             Y = Pos.Center(),
             Width = 30,
         };
+        var lblMouse = new Label()
+        {
+            Y = Pos.Center() + 2,
+            Height = 2,
+            AutoSize = true
+        };
+        Application.RootMouseEvent = (e) =>
+        {
+            lblMouse.Text = $"Mouse: X:{e.X};Y:{e.Y};Button:{e.Flags};\nView:{e.View}";
+        };
         var win = new Window()
         {
             Width = Dim.Fill(),
             Height = Dim.Fill()
         };
 
-        win.Add(label, text, button, text2);
+        win.Add(label, text, button, text2, lblMouse);
         Application.Top.Add(win);
         this._webConsole.WebApplication.Run();
     }
