@@ -35,6 +35,7 @@ public partial class ConsoleDemo : ComponentBase
             X = Pos.Center(),
             Y = 4
         };
+        button.Clicked += () => MessageBox.Query(50, 7, "Say Hello", $"Welcome {text.Text}");
         var text2 = new TextField("this is horiz/vert centered")
         {
             X = Pos.Center(),
@@ -51,13 +52,26 @@ public partial class ConsoleDemo : ComponentBase
         {
             lblMouse.Text = $"Mouse: X:{e.X};Y:{e.Y};Button:{e.Flags};\nView:{e.View}";
         };
+        var lblKey = new Label()
+        {
+            Y = Pos.Center() + 5,
+            Height = 2,
+            AutoSize = true
+        };
+        Application.RootKeyEvent = (e) =>
+        {
+            var mk = ShortcutHelper.GetModifiersKey(e);
+            lblKey.Text = $"Key:{e.Key};KeyValue:{e.KeyValue};KeyChar:{(char)e.KeyValue};\nAlt:{mk.HasFlag(Key.AltMask)};Ctrl:{mk.HasFlag(Key.CtrlMask)};Shift:{mk.HasFlag(Key.ShiftMask)}";
+            return false;
+        };
+
         var win = new Window()
         {
             Width = Dim.Fill(),
             Height = Dim.Fill()
         };
 
-        win.Add(label, text, button, text2, lblMouse);
+        win.Add(label, text, button, text2, lblMouse, lblKey);
         Application.Top.Add(win);
         this._webConsole.WebApplication.Run();
     }
