@@ -35,19 +35,45 @@ public partial class ConsoleWideCharDemo : ComponentBase
             X = Pos.Center(),
             Y = 4
         };
+        button.Clicked += () => MessageBox.Query("Say Hello 你", $"Welcome {text.Text}", "Ok");
         var text2 = new TextField("this is horiz/vert centered 你")
         {
             X = Pos.Center(),
             Y = Pos.Center(),
             Width = 30,
         };
+        var lblMouse = new Label()
+        {
+            Y = Pos.Center() + 2,
+            Height = 2,
+            AutoSize = true
+        };
+        var mouseCount = 0;
+        Application.RootMouseEvent = (e) =>
+        {
+            lblMouse.Text = $"Mouse: X:{e.X};Y:{e.Y};Button:{e.Flags};\nView:{e.View};Count:{++mouseCount}";
+        };
+        var lblKey = new Label()
+        {
+            Y = Pos.Center() + 5,
+            Height = 2,
+            AutoSize = true
+        };
+        var keyCount = 0;
+        Application.RootKeyEvent = (e) =>
+        {
+            var mk = ShortcutHelper.GetModifiersKey(e);
+            lblKey.Text = $"Key:{e.Key};KeyValue:{e.KeyValue};KeyChar:{(char) e.KeyValue}\nAlt:{mk.HasFlag(Key.AltMask)};Ctrl:{mk.HasFlag(Key.CtrlMask)};Shift:{mk.HasFlag(Key.ShiftMask)};Count:{++keyCount}";
+            return false;
+        };
+
         var win = new Window("HACC Demo 你")
         {
             Width = Dim.Fill(),
             Height = Dim.Fill()
         };
 
-        win.Add(label, text, button, text2);
+        win.Add(label, text, button, text2, lblMouse, lblKey);
         Application.Top.Add(win);
         this._webConsole.WebApplication.Run();
     }
