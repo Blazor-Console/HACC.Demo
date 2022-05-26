@@ -25,6 +25,7 @@
     <ItemGroup>
         <ProjectReference Include="..\gui.cs\Terminal.Gui\Terminal.Gui.csproj" />
         <ProjectReference Include="..\HACC\HACC.csproj" />
+        <ProjectReference Include="..\SSH.NET\src\Renci.SshNet\Renci.SshNet.csproj" />
     </ItemGroup>
 
     <ItemGroup>
