@@ -1,4 +1,5 @@
 using HACC.Components;
+using HACC.Extensions;
 using Microsoft.AspNetCore.Components;
 using Terminal.Gui;
 
@@ -20,13 +21,12 @@ public partial class ConsoleThreadingDemo : ComponentBase
     List<string> log = new List<string>();
     private ListView? _logJob;
 
-    protected void InitApp()
+    protected async Task InitAppAsync()
     {
         if (this._webConsole is null)
             throw new InvalidOperationException(message: "_webConsole reference was not set");
 
-        this._webConsole.WebApplication!.Shutdown();
-        this._webConsole.WebApplication.Init();
+        await HaccExtensions.WebApplication!.Init();
 
         var win = new Window("Threading")
         {
@@ -124,7 +124,7 @@ public partial class ConsoleThreadingDemo : ComponentBase
         }
         top.Loaded += Top_Loaded;
 
-        this._webConsole.WebApplication.Run();
+        await HaccExtensions.WebApplication.Run();
     }
 
     private async void LoadData()
@@ -134,6 +134,7 @@ public partial class ConsoleThreadingDemo : ComponentBase
         var items = await LoadDataAsync();
         LogJob("Returning from task");
         _itemsList.SetSource(items);
+        Application.DoEvents();
     }
 
     private void LogJob(string job)
@@ -160,6 +161,7 @@ public partial class ConsoleThreadingDemo : ComponentBase
         LogJob("Returning from task method");
         await _itemsList.SetSourceAsync(items);
         _itemsList.SetNeedsDisplay();
+        Application.DoEvents();
     }
 
     private CancellationTokenSource? cancellationTokenSource;

@@ -1,4 +1,5 @@
 using HACC.Components;
+using HACC.Extensions;
 using Microsoft.AspNetCore.Components;
 using NStack;
 using Terminal.Gui;
@@ -158,13 +159,12 @@ public partial class ConsoleProgressDemo : ComponentBase, IDisposable
     private uint _mainLooopTimeoutTick = 100; // ms
     private Window? _win;
 
-    protected void InitApp()
+    protected async Task InitAppAsync()
     {
         if (this._webConsole is null)
             throw new InvalidOperationException(message: "_webConsole reference was not set");
 
-        this._webConsole.WebApplication!.Shutdown();
-        this._webConsole.WebApplication.Init();
+        await HaccExtensions.WebApplication!.Init();
 
         var top = Application.Top;
         _win = new Window("HACC Scrolling Demo")
@@ -285,7 +285,7 @@ public partial class ConsoleProgressDemo : ComponentBase, IDisposable
         _win.Add(startBoth);
 
         top.Add(_win);
-        this._webConsole.WebApplication.Run();
+        await HaccExtensions.WebApplication.Run();
     }
 
     public void Dispose()

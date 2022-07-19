@@ -1,4 +1,5 @@
 using HACC.Components;
+using HACC.Extensions;
 using Microsoft.AspNetCore.Components;
 using Terminal.Gui;
 
@@ -11,13 +12,14 @@ public partial class ConsoleDemo : ComponentBase
     /// </summary>
     private WebConsole? _webConsole;
 
-    protected void InitApp()
+    protected async Task InitAppAsync()
     {
         if (this._webConsole is null)
             throw new InvalidOperationException(message: "_webConsole reference was not set");
 
-        this._webConsole.WebApplication!.Shutdown();
-        this._webConsole.WebApplication.Init();
+        await HaccExtensions.WebApplication!.Init();
+
+        var win = new Window();
 
         var label = new Label(text: "Enter your name:")
         {
@@ -35,13 +37,33 @@ public partial class ConsoleDemo : ComponentBase
             X = Pos.Center(),
             Y = 4
         };
-        button.Clicked += () => MessageBox.Query("Say Hello", $"Welcome {text.Text}", "Ok");
+
+        HaccExtensions.WebApplication.RunStateEnding += (v) =>
+        {
+        };
+
         var text2 = new TextField("this is horiz/vert centered")
         {
             X = Pos.Center(),
             Y = Pos.Center(),
             Width = 30,
         };
+        button.Clicked += () =>
+        {
+            HaccExtensions.WebApplication.RunStateEnding += WebApplication_RunStateEnding;
+            var b = MessageBox.Query("Say Hello", $"Welcome {text.Text}", "Yes", "No");
+        };
+        void WebApplication_RunStateEnding(Toplevel obj)
+        {
+            var b = MessageBox.Clicked;
+            if (b == -1)
+                text2.Text = "Canceled!";
+            else if (b == 0)
+                text2.Text = "You choose 'Yes'";
+            else if (b == 1)
+                text2.Text = "You choose 'No'";
+            HaccExtensions.WebApplication.RunStateEnding -= WebApplication_RunStateEnding;
+        }
         var lblMouse = new Label()
         {
             Y = Pos.Center() + 2,
@@ -67,14 +89,8 @@ public partial class ConsoleDemo : ComponentBase
             return false;
         };
 
-        var win = new Window()
-        {
-            Width = Dim.Fill(),
-            Height = Dim.Fill()
-        };
-
         win.Add(label, text, button, text2, lblMouse, lblKey);
         Application.Top.Add(win);
-        this._webConsole.WebApplication.Run();
+        await HaccExtensions.WebApplication.Run();
     }
 }

@@ -1,4 +1,5 @@
 using HACC.Components;
+using HACC.Extensions;
 using Microsoft.AspNetCore.Components;
 using Terminal.Gui;
 
@@ -52,7 +53,7 @@ public partial class ConsoleScrollingDemo : ComponentBase
         }
     }
 
-    class Filler : View
+    internal class Filler : View
     {
         int w = 40;
         int h = 50;
@@ -113,13 +114,12 @@ public partial class ConsoleScrollingDemo : ComponentBase
         }
     }
 
-    protected void InitApp()
+    protected async Task InitAppAsync()
     {
         if (this._webConsole is null)
             throw new InvalidOperationException(message: "_webConsole reference was not set");
 
-        this._webConsole.WebApplication!.Shutdown();
-        this._webConsole.WebApplication.Init();
+        await HaccExtensions.WebApplication!.Init();
 
         var top = Application.Top;
         var win = new Window("HACC Scrolling Demo")
@@ -370,7 +370,7 @@ public partial class ConsoleScrollingDemo : ComponentBase
         win.Add(scrollView, scrollView2, scrollView3, mousePos, progress, chkBox);
 
         top.Add(win);
-        this._webConsole.WebApplication.Run();
+        await HaccExtensions.WebApplication.Run();
     }
 }
 

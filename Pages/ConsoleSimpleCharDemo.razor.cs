@@ -1,4 +1,5 @@
 using HACC.Components;
+using HACC.Extensions;
 using Microsoft.AspNetCore.Components;
 using Terminal.Gui;
 
@@ -11,13 +12,12 @@ public partial class ConsoleSimpleCharDemo : ComponentBase
     /// </summary>
     private WebConsole? _webConsole;
 
-    protected void InitApp()
+    protected async Task InitAppAsync()
     {
         if (this._webConsole is null)
             throw new InvalidOperationException(message: "_webConsole reference was not set");
 
-        this._webConsole.WebApplication!.Shutdown();
-        this._webConsole.WebApplication.Init();
+        await HaccExtensions.WebApplication!.Init();
 
         var label = new Label(text: "Enter your name:")
         {
@@ -75,6 +75,6 @@ public partial class ConsoleSimpleCharDemo : ComponentBase
 
         win.Add(label, text, button, text2, lblMouse, lblKey);
         Application.Top.Add(win);
-        this._webConsole.WebApplication.Run();
+        await HaccExtensions.WebApplication.Run();
     }
 }

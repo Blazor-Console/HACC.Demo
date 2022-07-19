@@ -1,5 +1,7 @@
 using HACC.Components;
+using HACC.Extensions;
 using Microsoft.AspNetCore.Components;
+using System.Collections;
 using System.ComponentModel;
 using Terminal.Gui;
 
@@ -10,24 +12,23 @@ public partial class ConsoleMdiDemo : ComponentBase
     /// <summary>
     ///     This is NULL until after render
     /// </summary>
-    private WebConsole? _webConsole;
+    [Parameter] public WebConsole? _webConsole { get; set; }
 
-    protected void InitApp()
+    protected async Task InitAppAsync()
     {
         if (this._webConsole is null)
             throw new InvalidOperationException(message: "_webConsole reference was not set");
 
-        this._webConsole.WebApplication!.Shutdown();
-        this._webConsole.WebApplication.Init();
+        await HaccExtensions.WebApplication!.Init();
 
-        this._webConsole.WebApplication.Run<MdiMain>();
+        await HaccExtensions.WebApplication.Run<MdiMain>();
     }
 
     class MdiMain : Toplevel
     {
-        private WorkerApp workerApp;
-        private bool canOpenWorkerApp;
-        MenuBar menu;
+        private WorkerApp _workerApp;
+        private bool _canOpenWorkerApp;
+        MenuBar _menu;
 
         public MdiMain()
         {
@@ -35,25 +36,25 @@ public partial class ConsoleMdiDemo : ComponentBase
 
             IsMdiContainer = true;
 
-            workerApp = new WorkerApp() { Visible = false };
+            _workerApp = new WorkerApp() { Visible = false };
 
-            menu = new MenuBar(new MenuBarItem[] {
+            _menu = new MenuBar(new MenuBarItem[] {
                     new MenuBarItem ("_Options", new MenuItem [] {
-                        new MenuItem ("_Run Worker", "", () => workerApp.RunWorker(), null, null, Key.CtrlMask | Key.R),
-                        new MenuItem ("_Cancel Worker", "", () => workerApp.CancelWorker(), null, null, Key.CtrlMask | Key.C),
+                        new MenuItem ("_Run Worker", "", () => _workerApp.RunWorker(), null, null, Key.CtrlMask | Key.R),
+                        new MenuItem ("_Cancel Worker", "", () => _workerApp.CancelWorker(), null, null, Key.CtrlMask | Key.C),
                         null!,
                         new MenuItem ("_Quit", "", () => Quit(), null, null, Key.CtrlMask | Key.Q)
                     }),
                     new MenuBarItem ("_View", new MenuItem [] { }),
                     new MenuBarItem ("_Window", new MenuItem [] { })
                 });
-            menu.MenuOpening += Menu_MenuOpening;
-            Add(menu);
+            _menu.MenuOpening += Menu_MenuOpening;
+            Add(_menu);
 
             var statusBar = new StatusBar(new[] {
                     new StatusItem(Key.CtrlMask | Key.Q, "~^Q~ Exit", () => Quit()),
-                    new StatusItem(Key.CtrlMask | Key.R, "~^R~ Run Worker", () => workerApp.RunWorker()),
-                    new StatusItem(Key.CtrlMask | Key.C, "~^C~ Cancel Worker", () => workerApp.CancelWorker())
+                    new StatusItem(Key.CtrlMask | Key.R, "~^R~ Run Worker", () => _workerApp.RunWorker()),
+                    new StatusItem(Key.CtrlMask | Key.C, "~^C~ Cancel Worker", () => _workerApp.CancelWorker())
                 });
             Add(statusBar);
 
@@ -62,27 +63,27 @@ public partial class ConsoleMdiDemo : ComponentBase
 
             Closed += MdiMain_Closed;
 
-            Application.Iteration += () =>
+            Application.Iteration += async () =>
             {
                 var mdiTop = Application.MdiTop;
-                if (canOpenWorkerApp && !workerApp.Running && mdiTop.Running)
+                if (_canOpenWorkerApp && !_workerApp.Running && mdiTop.Running)
                 {
-                    Application.Run(workerApp);
+                    await HaccExtensions.WebApplication.Run(_workerApp);
                 }
             };
         }
 
         private void MdiMain_Closed(Toplevel obj)
         {
-            workerApp.Dispose();
+            _workerApp.Dispose();
             Dispose();
         }
 
         private void Menu_MenuOpening(MenuOpeningEventArgs menu)
         {
-            if (!canOpenWorkerApp)
+            if (!_canOpenWorkerApp)
             {
-                canOpenWorkerApp = true;
+                _canOpenWorkerApp = true;
                 return;
             }
             if (menu.CurrentMenu.Title == "_Window")
@@ -97,12 +98,12 @@ public partial class ConsoleMdiDemo : ComponentBase
 
         private void MdiMain_Deactivate(Toplevel top)
         {
-            workerApp.WriteLog($"{top.Data} deactivate.");
+            _workerApp.WriteLog($"{top.Data} deactivate.");
         }
 
         private void MdiMain_Activate(Toplevel top)
         {
-            workerApp.WriteLog($"{top.Data} activate.");
+            _workerApp.WriteLog($"{top.Data} activate.");
         }
 
         private MenuBarItem View()
@@ -188,10 +189,10 @@ public partial class ConsoleMdiDemo : ComponentBase
 
     class WorkerApp : Toplevel
     {
-        private List<string> log = new List<string>();
-        private ListView listLog;
-        private Dictionary<Staging, BackgroundWorker>? stagingWorkers;
-        private List<StagingUIController>? stagingsUI;
+        private List<string> _log = new List<string>();
+        private ListView _listLog;
+        private Dictionary<Staging, BackgroundWorker>? _stagingWorkers;
+        private List<StagingUIController>? _stagingsUI;
 
         public WorkerApp()
         {
@@ -209,90 +210,99 @@ public partial class ConsoleMdiDemo : ComponentBase
             };
             Add(label);
 
-            listLog = new ListView(log)
+            _listLog = new ListView(_log)
             {
                 X = 0,
                 Y = Pos.Bottom(label),
                 Width = Dim.Fill(),
                 Height = Dim.Fill()
             };
-            Add(listLog);
+            Add(_listLog);
         }
 
-        public void RunWorker()
+        public async void RunWorker()
         {
             var stagingUI = new StagingUIController() { Modal = true };
 
-            Staging staging = null!;
+            Staging? staging = null;
             var worker = new BackgroundWorker() { WorkerSupportsCancellation = true };
 
-            worker.DoWork += (s, e) =>
+            worker.DoWork += async (s, e) =>
             {
+                string? error = null;
+                var cancel = false;
                 var stageResult = new List<string>();
-                for (int i = 0; i < 500; i++)
+                await Task.Factory.StartNew(async () =>
                 {
-                    stageResult.Add(
-                        $"Worker {i} started at {DateTime.Now}");
-                    e.Result = stageResult;
-                    Thread.Sleep(1);
-                    if (worker.CancellationPending)
+                    try
                     {
-                        e.Cancel = true;
-                        return;
+                        for (int i = 0; i < 500; i++)
+                        {
+                            stageResult.Add(
+                                $"Worker {i} started at {DateTime.Now}");
+                            e.Result = stageResult;
+                            await Task.Delay(10);
+                            if (worker.CancellationPending)
+                            {
+                                cancel = true;
+                                break;
+                            }
+                        }
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        error = ex.Message;
+                    }
+
+                    if (error != null)
+                    {
+                        // Failed
+                        WriteLog($"Exception occurred {error} on Worker {staging!.StartStaging}.{staging.StartStaging:fff} at {DateTime.Now}");
+                    }
+                    else if (cancel)
+                    {
+                        // Canceled
+                        WriteLog($"Worker {staging!.StartStaging}.{staging.StartStaging:fff} was canceled at {DateTime.Now}!");
+                    }
+                    else
+                    {
+                        // Passed
+                        WriteLog($"Worker {staging!.StartStaging}.{staging.StartStaging:fff} was completed at {DateTime.Now}.");
+                        Application.Refresh();
+
+                        var stagingUI = new StagingUIController(staging, (List<string>) e.Result!)
+                        {
+                            Modal = false,
+                            Title = $"Worker started at {staging.StartStaging}.{staging.StartStaging:fff}",
+                            Data = $"{staging.StartStaging}.{staging.StartStaging:fff}"
+                        };
+
+                        stagingUI.ReportClosed += StagingUI_ReportClosed;
+
+                        if (_stagingsUI == null)
+                        {
+                            _stagingsUI = new List<StagingUIController>();
+                        }
+                        _stagingsUI.Add(stagingUI);
+                        _stagingWorkers?.Remove(staging);
+
+                        await stagingUI.RunAsync();
+                    }
+                });
             };
 
-            worker.RunWorkerCompleted += (s, e) =>
-            {
-                if (e.Error != null)
-                {
-                    // Failed
-                    WriteLog($"Exception occurred {e.Error.Message} on Worker {staging.StartStaging}.{staging.StartStaging:fff} at {DateTime.Now}");
-                }
-                else if (e.Cancelled)
-                {
-                    // Canceled
-                    WriteLog($"Worker {staging.StartStaging}.{staging.StartStaging:fff} was canceled at {DateTime.Now}!");
-                }
-                else
-                {
-                    // Passed
-                    WriteLog($"Worker {staging.StartStaging}.{staging.StartStaging:fff} was completed at {DateTime.Now}.");
-                    Application.Refresh();
-
-                    var stagingUI = new StagingUIController(staging, (List<string>) e.Result!)
-                    {
-                        Modal = false,
-                        Title = $"Worker started at {staging.StartStaging}.{staging.StartStaging:fff}",
-                        Data = $"{staging.StartStaging}.{staging.StartStaging:fff}"
-                    };
-
-                    stagingUI.ReportClosed += StagingUI_ReportClosed;
-
-                    if (stagingsUI == null)
-                    {
-                        stagingsUI = new List<StagingUIController>();
-                    }
-                    stagingsUI.Add(stagingUI);
-                    stagingWorkers?.Remove(staging);
-
-                    stagingUI.Run();
-                }
-            };
-
-            Application.Run(stagingUI);
+            await HaccExtensions.WebApplication.Run(stagingUI);
 
             if (stagingUI.Staging != null && stagingUI.Staging.StartStaging != null)
             {
                 staging = new Staging(stagingUI.Staging.StartStaging);
                 WriteLog($"Worker is started at {staging.StartStaging}.{staging.StartStaging:fff}");
-                if (stagingWorkers == null)
+                if (_stagingWorkers == null)
                 {
-                    stagingWorkers = new Dictionary<Staging, BackgroundWorker>();
+                    _stagingWorkers = new Dictionary<Staging, BackgroundWorker>();
                 }
-                stagingWorkers.Add(staging, worker);
-                worker.RunWorkerAsync();
+                _stagingWorkers.Add(staging, worker);
+                await Task.Run(() => worker.RunWorkerAsync());
                 stagingUI.Dispose();
             }
         }
@@ -300,44 +310,44 @@ public partial class ConsoleMdiDemo : ComponentBase
         private void StagingUI_ReportClosed(StagingUIController obj)
         {
             WriteLog($"Report {obj.Staging!.StartStaging}.{obj.Staging.StartStaging:fff} closed.");
-            stagingsUI!.Remove(obj);
+            _stagingsUI!.Remove(obj);
         }
 
-        public void CancelWorker()
+        public async void CancelWorker()
         {
-            if (stagingWorkers == null || stagingWorkers.Count == 0)
+            if (_stagingWorkers == null || _stagingWorkers.Count == 0)
             {
                 WriteLog($"Worker is not running at {DateTime.Now}!");
                 return;
             }
 
-            foreach (var sw in stagingWorkers)
+            foreach (var sw in _stagingWorkers)
             {
                 var key = sw.Key;
                 var value = sw.Value;
                 if (!key.Completed)
                 {
-                    value.CancelAsync();
+                    await Task.Run(() => value.CancelAsync());
                 }
                 WriteLog($"Worker {key.StartStaging}.{key.StartStaging:fff} is canceling at {DateTime.Now}!");
 
-                stagingWorkers.Remove(sw.Key);
+                _stagingWorkers.Remove(sw.Key);
             }
         }
 
         public void WriteLog(string msg)
         {
-            log.Add(msg);
-            listLog.MoveEnd();
+            _log.Add(msg);
+            _listLog.MoveDown();
         }
     }
 
     class StagingUIController : Window
     {
-        private Label label;
-        private ListView listView;
-        private Button start;
-        private Button close;
+        private Label _label;
+        private ListView _listView;
+        private Button _start;
+        private Button _close;
         public Staging? Staging { get; private set; }
 
         public event Action<StagingUIController>? ReportClosed;
@@ -345,9 +355,10 @@ public partial class ConsoleMdiDemo : ComponentBase
         public StagingUIController(Staging staging, List<string> list) : this()
         {
             Staging = staging;
-            label.Text = "Work list:";
-            listView.SetSource(list);
-            start.Visible = false;
+            _label.Text = "Work list:";
+            _listView.SetSource(list);
+            _listView.MoveEnd();
+            _start.Visible = false;
             Id = "";
         }
 
@@ -362,34 +373,34 @@ public partial class ConsoleMdiDemo : ComponentBase
 
             Title = "Run Worker";
 
-            label = new Label("Press start to do the work or close to exit.")
+            _label = new Label("Press start to do the work or close to exit.")
             {
                 X = Pos.Center(),
                 Y = 1,
                 ColorScheme = Colors.Dialog
             };
-            Add(label);
+            Add(_label);
 
-            listView = new ListView()
+            _listView = new ListView()
             {
                 X = 0,
                 Y = 2,
                 Width = Dim.Fill(),
                 Height = Dim.Fill(2)
             };
-            Add(listView);
+            Add(_listView);
 
-            start = new Button("Start") { IsDefault = true };
-            start.Clicked += () =>
+            _start = new Button("Start") { IsDefault = true };
+            _start.Clicked += () =>
             {
                 Staging = new Staging(DateTime.Now);
                 RequestStop();
             };
-            Add(start);
+            Add(_start);
 
-            close = new Button("Close");
-            close.Clicked += OnReportClosed;
-            Add(close);
+            _close = new Button("Close");
+            _close.Clicked += OnReportClosed;
+            Add(_close);
 
             KeyPress += (e) =>
             {
@@ -401,16 +412,16 @@ public partial class ConsoleMdiDemo : ComponentBase
 
             LayoutStarted += (_) =>
             {
-                var btnsWidth = start.Bounds.Width + close.Bounds.Width + 2 - 1;
+                var btnsWidth = _start.Bounds.Width + _close.Bounds.Width + 2 - 1;
                 var shiftLeft = Math.Max((Bounds.Width - btnsWidth) / 2 - 2, 0);
 
-                shiftLeft += close.Bounds.Width + 1;
-                close.X = Pos.AnchorEnd(shiftLeft);
-                close.Y = Pos.AnchorEnd(1);
+                shiftLeft += _close.Bounds.Width + 1;
+                _close.X = Pos.AnchorEnd(shiftLeft);
+                _close.Y = Pos.AnchorEnd(1);
 
-                shiftLeft += start.Bounds.Width + 1;
-                start.X = Pos.AnchorEnd(shiftLeft);
-                start.Y = Pos.AnchorEnd(1);
+                shiftLeft += _start.Bounds.Width + 1;
+                _start.X = Pos.AnchorEnd(shiftLeft);
+                _start.Y = Pos.AnchorEnd(1);
             };
         }
 
@@ -423,9 +434,9 @@ public partial class ConsoleMdiDemo : ComponentBase
             RequestStop();
         }
 
-        public void Run()
+        public async Task RunAsync()
         {
-            Application.Run(this);
+            await HaccExtensions.WebApplication.Run(this);
         }
     }
 
