@@ -26,21 +26,22 @@ public partial class ConsoleDemo : ComponentBase
             X = Pos.Center(),
             Y = 0,
         };
+        win.Add(label);
+
         var text = new TextField("gui.cs:")
         {
             X = Pos.Center(),
             Y = 2,
             Width = 20,
         };
+        win.Add(text);
+
         var button = new Button(text: "Say Hello")
         {
             X = Pos.Center(),
             Y = 4
         };
-
-        HaccExtensions.WebApplication.RunStateEnding += (v) =>
-        {
-        };
+        win.Add(button);
 
         var text2 = new TextField("this is horiz/vert centered")
         {
@@ -48,11 +49,14 @@ public partial class ConsoleDemo : ComponentBase
             Y = Pos.Center(),
             Width = 30,
         };
+        win.Add(text2);
+
         button.Clicked += () =>
         {
             HaccExtensions.WebApplication.RunStateEnding += WebApplication_RunStateEnding;
             var b = MessageBox.Query("Say Hello", $"Welcome {text.Text}", "Yes", "No");
         };
+
         void WebApplication_RunStateEnding(Toplevel obj)
         {
             var b = MessageBox.Clicked;
@@ -64,12 +68,15 @@ public partial class ConsoleDemo : ComponentBase
                 text2.Text = "You choose 'No'";
             HaccExtensions.WebApplication.RunStateEnding -= WebApplication_RunStateEnding;
         }
+
         var lblMouse = new Label()
         {
             Y = Pos.Center() + 2,
             Height = 2,
             AutoSize = true
         };
+        win.Add(lblMouse);
+
         var mouseCount = 0;
         Application.RootMouseEvent = (e) =>
         {
@@ -81,6 +88,8 @@ public partial class ConsoleDemo : ComponentBase
             Height = 2,
             AutoSize = true
         };
+        win.Add(lblKey);
+
         var keyCount = 0;
         Application.RootKeyEvent = (e) =>
         {
@@ -89,7 +98,6 @@ public partial class ConsoleDemo : ComponentBase
             return false;
         };
 
-        win.Add(label, text, button, text2, lblMouse, lblKey);
         Application.Top.Add(win);
         await HaccExtensions.WebApplication.Run();
     }
