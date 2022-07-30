@@ -23,7 +23,6 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <ProjectReference Include="..\Terminal.Gui\Terminal.Gui\Terminal.Gui.csproj" />
         <ProjectReference Include="..\HACC\HACC.csproj" />
     </ItemGroup>
 
